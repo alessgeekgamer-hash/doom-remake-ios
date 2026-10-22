@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.21)
 project(DoomRemake C)
 
-# SDL3 sources: read-only clone placed at doom-remake/SDL by the CI workflow
+# SDL3 sources: read-only clone placed at SDL/ (repo root) by the CI workflow
 add_subdirectory(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../SDL
+    ${CMAKE_CURRENT_SOURCE_DIR}/../SDL
     ${CMAKE_CURRENT_BINARY_DIR}/SDL
 )
 
-set(DOOM_EXAMPLE ${CMAKE_CURRENT_SOURCE_DIR}/../../examples/SDL/sdl_example.c)
-set(DOOM_WAD ${CMAKE_CURRENT_SOURCE_DIR}/../../doom1.wad)
+set(DOOM_EXAMPLE ${CMAKE_CURRENT_SOURCE_DIR}/../examples/SDL/sdl_example.c)
+set(DOOM_WAD ${CMAKE_CURRENT_SOURCE_DIR}/../doom1.wad)
 set(DOOM_STORYBOARD ${CMAKE_CURRENT_SOURCE_DIR}/LaunchScreen.storyboard)
 
 add_executable(DoomRemake MACOSX_BUNDLE ${DOOM_EXAMPLE})
