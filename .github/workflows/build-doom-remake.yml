@@ -38,6 +38,7 @@ jobs:
           set -e
           APP=$(find build-ios -maxdepth 5 -name "*.app" -type d | head -n 1)
           if [ -z "$APP" ]; then echo ".app no encontrado"; exit 1; fi
+          cp ios/icons/*.png "$APP/"
           echo "Contenido del bundle:"
           ls -la "$APP"
           rm -rf Payload "DOOM Remake.ipa"

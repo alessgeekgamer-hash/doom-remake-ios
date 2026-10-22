@@ -38,11 +38,8 @@ target_compile_definitions(DoomRemake PRIVATE
 
 target_link_libraries(DoomRemake PRIVATE SDL3::SDL3)
 
-# Bundle resources: the WAD, the launch screen and the home screen icons
-file(GLOB IOS_ICONS ${CMAKE_CURRENT_SOURCE_DIR}/icons/*.png)
-foreach(icon ${IOS_ICONS})
-    set_source_files_properties(${icon} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-endforeach()
+# Bundle resources: the WAD and the launch screen
+# (icons are copied in the packaging step with their exact iOS file names)
 set_source_files_properties(${DOOM_WAD} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 set_source_files_properties(${DOOM_STORYBOARD} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-target_sources(DoomRemake PRIVATE ${DOOM_WAD} ${DOOM_STORYBOARD} ${IOS_ICONS})
+target_sources(DoomRemake PRIVATE ${DOOM_WAD} ${DOOM_STORYBOARD})
