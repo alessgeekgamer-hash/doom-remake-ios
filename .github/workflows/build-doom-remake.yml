@@ -1,0 +1,54 @@
+name: Build DOOM Remake (iOS IPA)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout (archivos del port)
+        uses: actions/checkout@v4
+
+      - name: Clonar SDL3 (dependencia, solo lectura)
+        run: git clone --depth 1 https://github.com/libsdl-org/SDL.git SDL
+
+      - name: Seleccionar Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Configurar CMake (iOS arm64, sin firmar)
+        run: |
+          cmake -B build-ios -G Xcode \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_FRAMEWORK=OFF \
+            -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF \
+            -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO \
+            -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=NO \
+            -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
+            -S ios
+
+      - name: Compilar (Release)
+        run: cmake --build build-ios --config Release
+
+      - name: Empaquetar IPA (sin firmar)
+        run: |
+          set -e
+          APP=$(find build-ios -maxdepth 5 -name "*.app" -type d | head -n 1)
+          if [ -z "$APP" ]; then echo ".app no encontrado"; exit 1; fi
+          echo "Contenido del bundle:"
+          ls -la "$APP"
+          rm -rf Payload "DOOM Remake.ipa"
+          mkdir Payload
+          cp -R "$APP" Payload/
+          ditto -c -k --sequesterRsrc --keepParent Payload "DOOM Remake.ipa"
+          ls -la "DOOM Remake.ipa"
+
+      - name: Subir IPA como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: DOOM-Remake-iOS
+          path: DOOM Remake.ipa
+          retention-days: 30
